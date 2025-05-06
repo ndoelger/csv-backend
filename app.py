@@ -15,7 +15,7 @@ S3_URL = (
 
 
 # @app.get("/")
-# def upload_data():
+# def get_data():
 #     try:
 #         response = requests.get(S3_URL)
 #         # print(response)
