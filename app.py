@@ -9,23 +9,21 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.get("/")
-def get_data():
+@app.get("/<string:user_id>")
+def get_data(user_id):
     try:
         # Setup s3 client
         boto3.setup_default_session(profile_name="default")
         s3 = boto3.client("s3")
 
-        user_id = "111930521510381364902"
-        title = "Test"
+        objects_array = []
 
-        response = s3.get_object(
-            Bucket="vistar-dc", Key=f"2025/01/client-uploads/{user_id}/{title}.json"
-        )
-
-        body = response["Body"].read()
-
-        return body
+        for key in s3.list_objects(
+            Bucket="vistar-dc", Prefix=f"2025/01/client-uploads/{user_id}"
+        )["Contents"]:
+            objects_array.append(key["Key"])
+        
+        return objects_array
 
     except Exception as e:
         print(f"Error: {str(e)}")
