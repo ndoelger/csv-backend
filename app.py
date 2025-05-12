@@ -1,7 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
 import json
-import requests
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -9,31 +8,27 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-S3_URL = (
-    "https://vistar-dc.s3.us-east-1.amazonaws.com/2024/11/prizepicks/nba_dates.json"
-)
 
+@app.get("/")
+def get_data():
+    try:
+        # Setup s3 client
+        boto3.setup_default_session(profile_name="default")
+        s3 = boto3.client("s3")
 
-# @app.get("/")
-# def get_data():
-#     try:
-#         response = requests.get(S3_URL)
-#         # print(response)
-#         body = response.json()
-#         # print(body)
+        user_id = "111930521510381364902"
+        title = "Test"
 
-#         string = json.dumps(body)
-#         # print(string)
+        response = s3.get_object(
+            Bucket="vistar-dc", Key=f"2025/01/client-uploads/{user_id}/{title}.json"
+        )
 
-#         # Setup s3 client
-#         boto3.setup_default_session(profile_name="default")
+        body = response["Body"].read()
 
-#         s3 = boto3.client("s3")
-#         s3.put_object(Body=string, Bucket="vistar-dc", Key="2025/01/aws-cache/hey")
-#         return body
+        return body
 
-#     except Exception as e:
-#         print(f"Error: {str(e)}")
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 
 @app.post("/")
