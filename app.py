@@ -52,3 +52,11 @@ def upload_test():
 
     except Exception as e:
         print(f"Error: {str(e)}")
+
+
+@app.put("/<string:user_id>")
+def update_csv(user_id):
+    csv_data = request.get_json
+    
+
+    return
