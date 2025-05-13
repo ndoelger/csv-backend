@@ -22,7 +22,7 @@ def get_data(user_id):
             Bucket="vistar-dc", Prefix=f"2025/01/client-uploads/{user_id}"
         )["Contents"]:
             objects_array.append(key["Key"])
-        
+            
         return objects_array
 
     except Exception as e:
