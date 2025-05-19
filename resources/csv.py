@@ -1,6 +1,6 @@
 from flask import request
 from flask.views import MethodView
-from flask_smorest import Blueprint, abort
+from flask_smorest import Blueprint
 
 import boto3
 from botocore.exceptions import ClientError
@@ -35,24 +35,56 @@ class CSVList(MethodView):
 @blp.route("/")
 class CSV(MethodView):
     def post(self):
-            try:
-                upload_data = request.get_json()
+        try:
+            upload_data = request.get_json()
 
-                print(upload_data)
+            print(upload_data)
 
-                json_to_upload = json.dumps(upload_data["json"])
+            json_to_upload = json.dumps(upload_data["json"])
 
-                # Setup s3 client
-                boto3.setup_default_session(profile_name="default")
+            # Setup s3 client
+            boto3.setup_default_session(profile_name="default")
 
-                s3 = boto3.client("s3")
-                s3.put_object(
-                    Body=json_to_upload,
-                    Bucket="vistar-dc",
-                    Key=f"2025/01/client-uploads/{upload_data['userId']}/{upload_data['title']}.json",
-                )
+            s3 = boto3.client("s3")
+            s3.put_object(
+                Body=json_to_upload,
+                Bucket="vistar-dc",
+                Key=f"2025/01/client-uploads/{upload_data['userId']}/{upload_data['title']}.json",
+            )
 
-                return upload_data
+            return upload_data
 
-            except Exception as e:
-                print(f"Error: {str(e)}")
+        except Exception as e:
+            print(f"Error: {str(e)}")
+    def put(self):
+        try:
+            upload_data = request.get_json()
+
+            print(upload_data)
+            json_to_upload = json.dumps(upload_data["newJson"])
+
+            # Setup s3 client
+            boto3.setup_default_session(profile_name="default")
+            s3 = boto3.client("s3")
+
+            # Need access to
+            # s3.copy_object(
+            #     Bucket="vistar-dc",
+            #     CopySource=f"2025/01/client-uploads/{upload_data['userId']}/{upload_data['oldName']}.json",
+            #     Key=f"2025/01/client-uploads/{upload_data['userId']}/{upload_data['newName']}.json",
+            # )
+
+            # s3.delete_object(
+            #     Bucket="vistar-dc",
+            #     Key=f"2025/01/client-uploads/{upload_data['userId']}/{upload_data['oldName']}.json",
+            # )
+
+            s3.put_object(
+                Body=json_to_upload,
+                Bucket="vistar-dc",
+                Key=f"2025/01/client-uploads/{upload_data['userId']}/{upload_data['title']}.json",
+            )
+
+            return "success"
+        except Exception as e:
+            print(f"Error: {str(e)}")
