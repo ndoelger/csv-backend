@@ -6,14 +6,16 @@ import boto3
 
 import json
 
-from schemas import CSVSchema, CSVUpdateSchema
+from schemas.csv_schemas import CSVSchema, CSVUpdateSchema
+
+from typing import Dict, Any, TypedDict
 
 blp = Blueprint("CSVs", __name__, description="Client Updated CSV")
 
 
 @blp.route("/<string:user_id>")
 class CSVList(MethodView): # GET LIST OF CLIENT CSVS
-    def get(self, user_id):
+    def get(self, user_id:str):
         try:
             # SETUP S3 CLIENT
             boto3.setup_default_session(profile_name="default")
@@ -33,11 +35,11 @@ class CSVList(MethodView): # GET LIST OF CLIENT CSVS
 @blp.route("/")
 class CSV(MethodView):
     @blp.arguments(CSVSchema)
-    def post(self, upload_data): # ADD CSV TO CLIENT BUCKET
+    def post(self, upload_data: CSVSchema) -> CSVSchema: # ADD CSV TO CLIENT BUCKET
         try:
             print(upload_data)
 
-            json_to_upload = json.dumps(upload_data["json"])
+            json_to_upload: str = json.dumps(upload_data["json"])
 
             # SETUP S3 CLIENT
             boto3.setup_default_session(profile_name="default")
@@ -55,9 +57,9 @@ class CSV(MethodView):
             print(f"Error: {str(e)}")
     
     @blp.arguments(CSVUpdateSchema)
-    def put(self, upload_data): # UPDATE TITLE/JSON OF EXISTING CSV
+    def put(self, upload_data: CSVUpdateSchema) -> CSVUpdateSchema: # UPDATE TITLE/JSON OF EXISTING CSV
         try:
-            json_to_upload = json.dumps(upload_data["new_json"])
+            json_to_upload: str = json.dumps(upload_data["new_json"])
 
             # SETUP S3 CLIENT
             boto3.setup_default_session(profile_name="default")
@@ -81,6 +83,6 @@ class CSV(MethodView):
                 Key=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['new_title']}.json",
             )
 
-            return upload_data["new_json"]
+            return upload_data
         except Exception as e:
             print(f"Error: {str(e)}")
