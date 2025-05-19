@@ -1,30 +1,40 @@
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint
-
-import boto3
-
-import json
-
 from schemas.csv_schemas import CSVSchema, CSVUpdateSchema
 
-from typing import Dict, Any, TypedDict
+from typing import TypedDict, Optional
 
-blp = Blueprint("CSVs", __name__, description="Client Updated CSV")
+import boto3
+import json
 
+blp: Blueprint = Blueprint("CSVs", __name__, description="Client Updated CSV")
+
+class CSVUploadDict(TypedDict):
+    title: str
+    user_id: str
+    json: str
+
+class CSVUpdateDict(TypedDict):
+    user_id: str
+    old_title: Optional[str]
+    new_title: Optional[str]
+    new_json: Optional[str]
 
 @blp.route("/<string:user_id>")
-class CSVList(MethodView): # GET LIST OF CLIENT CSVS
-    def get(self, user_id:str):
+class CSVList(MethodView):  # GET LIST OF CLIENT CSVS
+    def get(self, user_id: str) -> list[str]:
         try:
             # SETUP S3 CLIENT
             boto3.setup_default_session(profile_name="default")
             s3 = boto3.client("s3")
 
-            objects_array = []
+            objects_array: list[str] = []
 
             # APPEND EACH CSV INTO OBJECTS_ARRAY AND RETURN TO CLIENT
-            for key in s3.list_objects(Bucket="vistar-dc", Prefix=f"2025/01/client-uploads/{user_id}")["Contents"]:
+            for key in s3.list_objects(
+                Bucket="vistar-dc", Prefix=f"2025/01/client-uploads/{user_id}"
+            )["Contents"]:
                 objects_array.append(key["Key"])
 
             return objects_array
@@ -32,10 +42,11 @@ class CSVList(MethodView): # GET LIST OF CLIENT CSVS
         except Exception as e:
             print(f"Error: {str(e)}")
 
+
 @blp.route("/")
 class CSV(MethodView):
     @blp.arguments(CSVSchema)
-    def post(self, upload_data: CSVSchema) -> CSVSchema: # ADD CSV TO CLIENT BUCKET
+    def post(self, upload_data: CSVUploadDict) -> CSVUploadDict:  # ADD CSV TO CLIENT BUCKET
         try:
             print(upload_data)
 
@@ -43,8 +54,8 @@ class CSV(MethodView):
 
             # SETUP S3 CLIENT
             boto3.setup_default_session(profile_name="default")
-            s3 = boto3.client("s3")
-            
+            s3: boto3.client = boto3.client("s3")
+
             s3.put_object(
                 Body=json_to_upload,
                 Bucket="vistar-dc",
@@ -55,9 +66,11 @@ class CSV(MethodView):
 
         except Exception as e:
             print(f"Error: {str(e)}")
-    
+
     @blp.arguments(CSVUpdateSchema)
-    def put(self, upload_data: CSVUpdateSchema) -> CSVUpdateSchema: # UPDATE TITLE/JSON OF EXISTING CSV
+    def put(
+        self, upload_data: CSVUpdateDict
+    ) -> CSVUpdateDict:  # UPDATE TITLE/JSON OF EXISTING CSV
         try:
             json_to_upload: str = json.dumps(upload_data["new_json"])
 

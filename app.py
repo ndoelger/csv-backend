@@ -4,7 +4,7 @@ from flask_smorest import Api
 
 from resources.csv import blp as CSVBlueprint
 
-app = Flask(__name__)
+app: Flask = Flask(__name__)
 CORS(app)
 
 app.config["PROPAGATE_EXCEPTIONS"] = True
@@ -15,6 +15,6 @@ app.config["OPENAPI_URL_PREFIX"] = "/"
 app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-api = Api(app)
+api: Api = Api(app)
 
 api.register_blueprint(CSVBlueprint)
