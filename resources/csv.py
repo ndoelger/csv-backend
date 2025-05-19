@@ -3,7 +3,6 @@ from flask.views import MethodView
 from flask_smorest import Blueprint
 
 import boto3
-from botocore.exceptions import ClientError
 
 import json
 

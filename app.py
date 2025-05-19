@@ -1,7 +1,4 @@
-import boto3
-from botocore.exceptions import ClientError
-import json
-from flask import Flask, request
+from flask import Flask
 from flask_cors import CORS
 from flask_smorest import Api
 
