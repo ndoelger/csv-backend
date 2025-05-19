@@ -7,8 +7,8 @@ class CSVSchema(Schema):
     json = fields.Str(required=True)
 
 class CSVUpdateSchema(Schema):
-    oldTitle = fields.Str()
-    newTitle = fields.Str()
+    old_title = fields.Str()
+    new_title = fields.Str()
     new_json = fields.Str()
     user_id = fields.Str(required=True)
 

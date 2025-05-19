@@ -53,36 +53,34 @@ class CSV(MethodView):
 
         except Exception as e:
             print(f"Error: {str(e)}")
-   
-    def put(self): # UPDATE TITLE/JSON OF EXISTING CSV
+    
+    @blp.arguments(CSVUpdateSchema)
+    def put(self, upload_data): # UPDATE TITLE/JSON OF EXISTING CSV
         try:
-            upload_data = request.get_json()
-
-            print(upload_data)
-            json_to_upload = json.dumps(upload_data["newJson"])
+            json_to_upload = json.dumps(upload_data["new_json"])
 
             # SETUP S3 CLIENT
             boto3.setup_default_session(profile_name="default")
             s3 = boto3.client("s3")
 
-            # Need access to
+            # NEED ACCESS
             # s3.copy_object(
             #     Bucket="vistar-dc",
-            #     CopySource=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['oldName']}.json",
-            #     Key=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['newName']}.json",
+            #     CopySource=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['old_name']}.json",
+            #     Key=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['new_name']}.json",
             # )
 
             # s3.delete_object(
             #     Bucket="vistar-dc",
-            #     Key=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['oldName']}.json",
+            #     Key=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['old_name']}.json",
             # )
 
             s3.put_object(
                 Body=json_to_upload,
                 Bucket="vistar-dc",
-                Key=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['title']}.json",
+                Key=f"2025/01/client-uploads/{upload_data['user_id']}/{upload_data['new_title']}.json",
             )
 
-            return "success"
+            return upload_data["new_json"]
         except Exception as e:
             print(f"Error: {str(e)}")
