@@ -1,48 +1,41 @@
 # Client CSV Uploader
 
-`Client CSV Uploader` contains a boilerplate template in which clients can upload/edit their csv data on their own
+`Client CSV Uploader` contains a boilerplate template in which clients can upload/edit their AWS s3 objects
 
-- List all objects in a user's 
-- Post
-- Put
+- List all objects in a user's s3 Bucket (user_id from a test `Auth0`)
+- Upload new CSV/JSON data to their s3 Bucket
+- Edit JSON data/title of existing object
 
-## How to start
+## How to run
 
-There are two ways. First way is use [`cookiecutter`](https://github.com/audreyr/cookiecutter) template (it located in [different repository](https://github.com/xen/flask-ptc)):
-
-    cookiecutter https://github.com/xen/flask-ptc.git
-
-The second way is to manually clone this repository and change it later by own. Project is ready to run (with some requirements). You need to clone and run:
+To log into my default aws profile
+```sh
+$ aws sso login
+```
+To build/run Docker image
 
 ```sh
-$ mkdir Project
-$ cd Project
-$ git clone git@github.com:xen/flask-project-template.git .
-$ make
-$ make run
+$ docker build -t csv-uploader .
+$ docker run -dp 5001:5001 \                          
+  -v $(pwd):/app \
+  -v ~/.aws:/root/.aws:ro \
+  csv-uploader
 ```
+Open http://localhost:5001/swagger-ui, to test GET/POST/PUT methods. You can use "111930521510381364902" as a test `user_id`. 
 
-Open http://127.0.0.1:5000/, customize project files and **have fun**.
+## Next Steps
 
-If you have any ideas about how to improve it [Fork project](https://github.com/xen/flask-project-template/fork) and send me a pull request.
-
-## Requirements
-
-If you never worked with python projects then the simplest way is run project inside Docker. Follow instruction [how to install Docker in your OS](https://docs.docker.com/installation/).
-
-If you familiar with web development then you need Python and Node.js:
-- Recent Python supported version with SQLite library (usually it is included) 
-- Working `virtualenv` command, a name can vary, so you can change it inside `Makefile`
-- `make`
-- [`bower`](http://bower.io/), if you already have `node.js` with `npm` then run this command:
-
-```sh
-npm install -g bower
-```
+- More streamlined way to connect to AWS without the local profile
+- Flask improvements that align with Vistar standards
+  - Error handling
+  - Logging
+  - Environment configurations
+  - Security
 
 ## Included modules support
 
-- [`Flask`](http://flask.pocoo.org/) & [`Werkzeug`](http://werkzeug.pocoo.org/) — base for everything.
-- [`Flask`](http://flask.pocoo.org/) & [`Werkzeug`](http://werkzeug.pocoo.org/) — base for everything.
-- [`Flask`](http://flask.pocoo.org/) & [`Werkzeug`](http://werkzeug.pocoo.org/) — base for everything.
-- [`Flask`](http://flask.pocoo.org/) & [`Werkzeug`](http://werkzeug.pocoo.org/) — base for everything.
+- [`Flask`] — base for application.
+- [`boto3`] — for uploading csv data to AWS.
+- [`flask_cors`] — grants access to client frontend.
+- [`flask_smorest`] — blueprint routing and error handling.
+- [`marshmallow`] — object/schema validation.
