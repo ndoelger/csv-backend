@@ -26,6 +26,7 @@ Open http://localhost:5001/swagger-ui, to test GET/POST/PUT methods. You can use
 ## Next Steps
 
 - More streamlined way to connect to AWS without the local profile
+- Implementation with Vistar Trafficking Repo
 - Flask improvements that align with Vistar standards
   - Error handling
   - Logging
